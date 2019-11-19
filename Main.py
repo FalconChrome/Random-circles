@@ -10,22 +10,32 @@ SCREEN_SIZE = [400, 400]
 
 class Circles(Ui_Form, QWidget):
     def __init__(self):
+        self.init = True
         super().__init__()
         self.setupUi(self)
         self.initUi()
 
     def initUi(self):
         self.setGeometry(400, 200, *SCREEN_SIZE)
+        self.pushButton.clicked.connect(self.redraw)
 
-        self.pushButton.clicked.connect(self.paint)
+    def redraw(self):
+        self.init = False
+        self.repaint()
+        self.init = True
 
-    def paint(self):
+    def paintEvent(self, event):
+        if self.init:
+            return None
         qp = QPainter()
         qp.begin(self)
+        self.drawCircle(qp)
+        qp.end()
+
+    def drawCircle(self, qp):
         qp.setBrush(QColor(randint(0, 255), randint(0, 255), randint(0, 255)))
         qp.drawEllipse(randint(0, SCREEN_SIZE[0]),
                       randint(50, SCREEN_SIZE[1]), *(randint(1, 100),) * 2)
-        qp.end()
 
 
 if __name__ == '__main__':
